@@ -1338,8 +1338,10 @@ hierarchy:<a href="#section-1-5" class="pilcrow">¶</a></p>
 <p id="section-1-7">Together, the full 128-bit address is a deterministic, verifiable function of
 the hardware key, the operator-controlled aggregate prefix, and the RFC 3972
 modifier. HCGA operates at the network layer and is designed as a complement
-to application-layer workload identity mechanisms such as those developed in
-the IETF WIMSE working group <span>[<a href="#WIMSE-ARCH" class="cite xref">WIMSE-ARCH</a>]</span>.<a href="#section-1-7" class="pilcrow">¶</a></p>
+to application-layer workload identity mechanisms such as the WIMSE
+architecture <span>[<a href="#WIMSE-ARCH" class="cite xref">WIMSE-ARCH</a>]</span> and the AI Identity Management System
+<span>[<a href="#WIMSE-AIMS" class="cite xref">WIMSE-AIMS</a>]</span>, which address authentication and authorization of AI agent
+interactions above the IP layer.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <div id="conventions-and-terminology">
 <section id="section-1.1">
         <h3 id="name-2-conventions-and-terminolo">
@@ -1360,8 +1362,8 @@ to the aggregate prefix.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 <p id="section-1.1-5"><strong>CGA params:</strong> As defined in RFC 3972: modifier (128-bit random value),
 subnet prefix, public key (SPKI format).<a href="#section-1.1-5" class="pilcrow">¶</a></p>
 <p id="section-1.1-6"><strong>SPKI:</strong> SubjectPublicKeyInfo, the DER-encoded format for a public key as
-defined in RFC 5480 for ECDSA keys. This is the same format used by RFC 3972
-and RFC 4982.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
+defined in <span>[<a href="#RFC5480" class="cite xref">RFC5480</a>]</span> for ECDSA keys. This is the same format used by <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span>
+and <span>[<a href="#RFC4982" class="cite xref">RFC4982</a>]</span>.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="rfc-3972-background">
@@ -1369,7 +1371,7 @@ and RFC 4982.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
         <h3 id="name-3-rfc-3972-background">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-3-rfc-3972-background" class="section-name selfRef">3. RFC 3972 Background</a>
         </h3>
-<p id="section-1.2-1">RFC 3972 §5 defines the CGA IID generation procedure:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-1"><span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> §5 defines the CGA IID generation procedure:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.2-2"><code>
 IID = SHA-256(modifier[16] || 0x00^9 || prefix[8] || public_key_SPKI)[:8]
 IID[0] &amp;= 0xFC    # clear bits 6 and 7 (universal/local and individual/group)
@@ -1379,7 +1381,7 @@ address, not the host part).<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 <p id="section-1.2-4">Verification works in reverse: given <code>(address, modifier, public_key)</code>,
 recompute the IID and compare it against <code>address[8:16]</code>. The prefix input
 is taken from the address itself (bits 0–63).<a href="#section-1.2-4" class="pilcrow">¶</a></p>
-<p id="section-1.2-5">RFC 4982 <span>[<a href="#RFC4982" class="cite xref">RFC4982</a>]</span> extends CGA to support multiple hash algorithms via a
+<p id="section-1.2-5"><span>[<a href="#RFC4982" class="cite xref">RFC4982</a>]</span> extends CGA to support multiple hash algorithms via a
 hash algorithm extension. HCGA uses SHA-256 with ECDSA P-256, consistent
 with the RFC 4982 framework.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
 </section>
@@ -1410,9 +1412,9 @@ workload key.<a href="#section-1.3.1-2" class="pilcrow">¶</a></p>
           <h4 id="name-42-per-agent-64-routing">
 <a href="#section-1.3.2" class="section-number selfRef">1.3.2. </a><a href="#name-42-per-agent-64-routing" class="section-name selfRef">4.2 Per-Agent /64 Routing</a>
           </h4>
-<p id="section-1.3.2-1">A network operator managing a large agentic deployments may want per-agent
-routing policy: rate limiting, traffic engineering, QoS, monitoring. If each
-agent has its own /64, those policies map directly to routing table entries.
+<p id="section-1.3.2-1">A network operator managing a large agentic deployment may prefer or be required by policy to provide per-agent
+routing policy on order to provide technical features such as rate limiting, traffic engineering, QoS, and monitoring. If each
+agent is provisioned with its own /64, those policies are able to map directly to routing table entries.
 Infrastructure-assigned prefixes require an external table to connect an
 address to an agent; hardware-derived prefixes carry that mapping in the
 address itself.<a href="#section-1.3.2-1" class="pilcrow">¶</a></p>
@@ -1424,7 +1426,7 @@ address itself.<a href="#section-1.3.2-1" class="pilcrow">¶</a></p>
 <a href="#section-1.3.3" class="section-number selfRef">1.3.3. </a><a href="#name-43-multiple-addresses-per-a" class="section-name selfRef">4.3 Multiple Addresses per Agent</a>
           </h4>
 <p id="section-1.3.3-1">CGA allows a host to derive multiple addresses from the same key with
-different modifiers. In RFC 3972, all such addresses share the same /64.
+different modifiers. In <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span>, all such addresses share the same /64.
 In HCGA, the agent owns the /64 entirely — it may derive addresses with
 any IID within its /64, enabling per-connection address pseudonymity while
 retaining per-agent /64 accountability.<a href="#section-1.3.3-1" class="pilcrow">¶</a></p>
@@ -1488,7 +1490,7 @@ be zeroed.<a href="#section-1.4.2-4" class="pilcrow">¶</a></p>
 hcga_prefix_bits = aggregate_bits[0:L] || subnet_bits[0:n]
 hcga_prefix      = IPv6 prefix of length 64 formed from hcga_prefix_bits
 </code><a href="#section-1.4.3-1" class="pilcrow">¶</a></p>
-<p id="section-1.4.3-2">Equivalently, in Go notation:
+<p id="section-1.4.3-2">Equivalently, in GoLang notation:
 <code>go
 var prefixBytes [8]byte
 copy(prefixBytes[:], aggregate.Addr().As16()[:L/8])
@@ -1512,7 +1514,7 @@ if L%8 != 0 {
           <h4 id="name-54-iid-derivation">
 <a href="#section-1.4.4" class="section-number selfRef">1.4.4. </a><a href="#name-54-iid-derivation" class="section-name selfRef">5.4 IID Derivation</a>
           </h4>
-<p id="section-1.4.4-1">The IID is computed per RFC 3972 §5 using <code>hcga_prefix</code> as the prefix input:<a href="#section-1.4.4-1" class="pilcrow">¶</a></p>
+<p id="section-1.4.4-1">The IID is computed per <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> §5 using <code>hcga_prefix</code> as the prefix input:<a href="#section-1.4.4-1" class="pilcrow">¶</a></p>
 <p id="section-1.4.4-2"><code>
 IID = SHA-256(modifier[16] || 0x00^9 || hcga_prefix_bytes[8] || public_key_SPKI_DER)[:8]
 IID[0] &amp;= 0xFC
@@ -1520,7 +1522,7 @@ IID[0] &amp;= 0xFC
 <p id="section-1.4.4-3">where <code>hcga_prefix_bytes[8]</code> is the 8-byte representation of the /64
 network address (i.e., the first 8 bytes of a 128-bit address formed by
 appending 64 zero bits to <code>hcga_prefix</code>).<a href="#section-1.4.4-3" class="pilcrow">¶</a></p>
-<p id="section-1.4.4-4">This is identical to RFC 3972 §5 with <code>hcga_prefix</code> substituted for the
+<p id="section-1.4.4-4">This is identical to <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> §5 with <code>hcga_prefix</code> substituted for the
 externally-provided prefix.<a href="#section-1.4.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1569,9 +1571,9 @@ address. Failure of any check MUST be treated as a verification failure.<a href=
           <h4 id="name-57-modifier-handling">
 <a href="#section-1.4.7" class="section-number selfRef">1.4.7. </a><a href="#name-57-modifier-handling" class="section-name selfRef">5.7 Modifier Handling</a>
           </h4>
-<p id="section-1.4.7-1">The modifier serves the same purpose as in RFC 3972: collision avoidance
+<p id="section-1.4.7-1">The modifier serves the same purpose as in <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span>: collision avoidance
 when the SHA-256 IID derivation produces an address that is already in use.
-An implementation MUST implement the RFC 3972 §5 collision detection
+An implementation MUST implement the <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> §5 collision detection
 procedure, incrementing the modifier until no collision is detected.<a href="#section-1.4.7-1" class="pilcrow">¶</a></p>
 <p id="section-1.4.7-2">For HCGA, collision detection applies to both the IID (within the /64) and
 the /64 prefix itself (across agents within the aggregate). The probability
@@ -1580,7 +1582,7 @@ n²/(2 × 2^16) — approximately 0.7% for 1,000 agents (birthday bound). An
 operator MUST monitor for prefix collisions and MUST NOT issue two HCGA
 addresses with the same /64 prefix. The modifier does not affect the subnet
 bits; prefix collision requires either a different aggregate or a different
-key.<a href="#section-1.4.7-2" class="pilcrow">¶</a></p>
+key. In operation this is typically the result of human error or misconfiguration.<a href="#section-1.4.7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1614,7 +1616,7 @@ the prefix verification step.<a href="#section-1.5-3" class="pilcrow">¶</a></p>
         <h3 id="name-7-interaction-with-rfc-3972">
 <a href="#section-1.6" class="section-number selfRef">1.6. </a><a href="#name-7-interaction-with-rfc-3972" class="section-name selfRef">7. Interaction with RFC 3972 CGA Parameters</a>
         </h3>
-<p id="section-1.6-1">HCGA reuses the RFC 3972 CGA parameter structure (modifier, subnet prefix,
+<p id="section-1.6-1">HCGA reuses the <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> CGA parameter structure (modifier, subnet prefix,
 collision count, public key) directly, with one substitution:<a href="#section-1.6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.6-2.1">
@@ -1752,14 +1754,14 @@ chain via SPIRE tpm_devid node attestation<a href="#section-1.8.4-2.3.1" class="
               <p id="section-1.8.4-2.4.1"><strong>Software key (stub mode):</strong> no hardware binding; development use only<a href="#section-1.8.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-1.8.4-3">Relying parties MUST inspect the <code>tier</code> field in the ANCHOR registry entry
-to determine the attestation strength of a given HCGA address. HCGA
-verification itself does not distinguish between tiers; attestation-strength
-labeling is the registry's responsibility. The RATS architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>
-provides the framework for remote attestation evidence conveyance;
-<span>[<a href="#RATS-KEY-ATTEST" class="cite xref">RATS-KEY-ATTEST</a>]</span> addresses hardware key attestation for HSMs and TPMs.
-For SPIFFE-chained deployments, <span>[<a href="#TRANSITIVE-ATTEST" class="cite xref">TRANSITIVE-ATTEST</a>]</span> addresses transitive
-attestation across workload boundaries.<a href="#section-1.8.4-3" class="pilcrow">¶</a></p>
+<p id="section-1.8.4-3">HCGA verification does not encode attestation tier; the mechanism binds
+an address to a public key regardless of how that key is protected. Relying
+parties SHOULD obtain and verify attestation evidence alongside the HCGA
+address to determine the strength of the underlying key binding. The RATS
+architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> provides the framework for remote attestation
+evidence conveyance; <span>[<a href="#RATS-KEY-ATTEST" class="cite xref">RATS-KEY-ATTEST</a>]</span> addresses hardware key attestation
+for HSMs and TPMs. For SPIFFE-chained deployments, <span>[<a href="#TRANSITIVE-ATTEST" class="cite xref">TRANSITIVE-ATTEST</a>]</span>
+addresses transitive attestation across workload boundaries.<a href="#section-1.8.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1911,6 +1913,10 @@ structure.<a href="#section-1.9.2-1" class="pilcrow">¶</a></p>
 <dt id="TRANSITIVE-ATTEST">[TRANSITIVE-ATTEST]</dt>
         <dd>
 <span class="refAuthor">Mandyam, G.</span> and <span class="refAuthor">J. Walker</span>, <span class="refTitle">"Transitive Attestation for Sovereign Workloads"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-mw-wimse-transitive-attestation-00</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-mw-wimse-transitive-attestation-00">https://datatracker.ietf.org/doc/html/draft-mw-wimse-transitive-attestation-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WIMSE-AIMS">[WIMSE-AIMS]</dt>
+        <dd>
+<span class="refAuthor">Kasselman, P.</span>, <span class="refAuthor">Lombardo, J.</span>, <span class="refAuthor">Rosomakho, Y.</span>, <span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Steele, N.</span>, and <span class="refAuthor">A. Parecki</span>, <span class="refTitle">"AI Identity Management System"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-aims-00</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-aims-00">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-aims-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="WIMSE-ARCH">[WIMSE-ARCH]</dt>
       <dd>
