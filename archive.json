@@ -1,0 +1,88 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2026-10-22T04:17:29.797023+00:00",
+  "repo": "buraglio/draft-buraglio-6man-hcga",
+  "labels": [
+    {
+      "name": "accessibility",
+      "description": "Barrier affecting people with disabilities",
+      "color": "f143ab"
+    },
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOVSQ8o88AAAABJ0YUjQ",
+      "title": "Add references, ack section, and merge readibility edits.",
+      "url": "https://github.com/buraglio/draft-buraglio-6man-hcga/pull/1",
+      "state": "MERGED",
+      "author": "buraglio",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-10-21T15:12:51Z",
+      "updatedAt": "2026-10-21T15:15:19Z",
+      "baseRepository": "buraglio/draft-buraglio-6man-hcga",
+      "baseRefName": "main",
+      "baseRefOid": "1e03be839be4dc84b0275012d88e9babcc2b6a2d",
+      "headRepository": "buraglio/draft-buraglio-6man-hcga",
+      "headRefName": "update-refs-readibility",
+      "headRefOid": "622e79ababb3b0389771178d706fa25864a711ad",
+      "closedAt": "2026-10-21T15:15:12Z",
+      "mergedAt": "2026-10-21T15:15:12Z",
+      "mergedBy": "buraglio",
+      "mergeCommit": {
+        "oid": "02c1370e3645fa1e731814a0ff75a4fd5059a647"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
