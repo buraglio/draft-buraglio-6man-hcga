@@ -1397,10 +1397,10 @@ with the RFC 4982 framework.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
 <a href="#section-1.3.1" class="section-number selfRef">1.3.1. </a><a href="#name-41-infrastructure-assigned-" class="section-name selfRef">4.1 Infrastructure-Assigned Prefixes Carry No Key Binding</a>
           </h4>
 <p id="section-1.3.1-1">In RFC 3972 deployments, the /64 prefix is external. Consider a Kubernetes
-node with prefix <code>2001:db8:cafe:1::/64</code> assigned by the CNI plugin. All pods
+node with prefix <code>3fff:1:cafe:1::/64</code> assigned by the CNI plugin. All pods
 on that node share the same /64. Each pod generates a CGA IID from its own
 key and the shared prefix, producing unique addresses within the /64.<a href="#section-1.3.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.3.1-2">The mechanism works: each pod gets a unique, verifiable address within the
+<p id="section-1.3.1-2">In this scenario, each pod gets a unique, verifiable address within the
 /64. The limitation is that the prefix itself is a network infrastructure
 artifact — it identifies the node or node subnet, not the individual agent.
 The prefix alone carries no cryptographic relationship to any particular
@@ -1942,7 +1942,7 @@ structure.<a href="#section-1.9.2-1" class="pilcrow">¶</a></p>
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-appendix-a-example-hcga-der" class="section-name selfRef">Appendix A: Example HCGA Derivation (ECDSA P-256, /48 Aggregate)</a>
       </h2>
 <p id="appendix-A-1">Given:
-- aggregate: <code>2001:db8:cafe::/48</code>
+- aggregate: <code>3fff:1:cafe::/48</code>
 - ECDSA P-256 key pair (generated fresh; public key in SPKI DER form, 91 bytes)
 - modifier: <code>0000000000000000</code> (16 zero bytes; use random in production)<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <p id="appendix-A-2">Step 1 — Subnet bits (16 bits for /48 → /64):
@@ -1963,10 +1963,10 @@ IID = e.g., c8:5e:8b:4d:e3:ce:e9:49
 </code><a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <p id="appendix-A-5">Step 4 — HCGA address:
 <code>
-2001:db8:cafe:3a7f:c85e:8b4d:e3ce:e949
+3fff:1:cafe:3a7f:c85e:8b4d:e3ce:e949
 </code><a href="#appendix-A-5" class="pilcrow">¶</a></p>
 <p id="appendix-A-6">Verification:
-1. Aggregate check: <code>2001:db8:cafe:</code> → matches operator's /48 ✓
+1. Aggregate check: <code>3fff:1:cafe:</code> → matches operator's /48 ✓
 2. Subnet check: <code>SHA-256(pubkey)[0:2] = 0x3a7f</code> → matches bits 48–63 ✓
 3. IID check: recompute → <code>c85e:8b4d:e3ce:e949</code> ✓<a href="#appendix-A-6" class="pilcrow">¶</a></p>
 </section>
