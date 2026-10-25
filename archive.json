@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-22T04:17:29.797023+00:00",
+  "timestamp": "2026-10-25T04:14:46.241143+00:00",
   "repo": "buraglio/draft-buraglio-6man-hcga",
   "labels": [
     {
@@ -81,6 +81,32 @@
       "mergeCommit": {
         "oid": "02c1370e3645fa1e731814a0ff75a4fd5059a647"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOVSQ8o88AAAABKVHHzA",
+      "title": "some algorithmic fixes, reframing.",
+      "url": "https://github.com/buraglio/draft-buraglio-6man-hcga/pull/2",
+      "state": "OPEN",
+      "author": "anarkiwi",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-10-23T19:29:39Z",
+      "updatedAt": "2026-10-23T19:29:39Z",
+      "baseRepository": "buraglio/draft-buraglio-6man-hcga",
+      "baseRefName": "main",
+      "baseRefOid": "d30041fd75998710f69245a18d99f4df4f55e9ef",
+      "headRepository": "anarkiwi/draft-buraglio-6man-hcga",
+      "headRefName": "reframe",
+      "headRefOid": "c60342d4071f0acd69c90be697edea1b69376898",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
