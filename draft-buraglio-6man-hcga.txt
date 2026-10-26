@@ -4,8 +4,9 @@
 
 6man                                                         N. Buraglio
 Internet-Draft                                   Energy Sciences Network
-Intended status: Standards Track                         26 October 2026
-Expires: 29 April 2027
+Intended status: Standards Track                               J. Bailey
+Expires: 29 April 2027                          Overly Specific Dynamics
+                                                         26 October 2026
 
 
        Hierarchical Cryptographically Generated Addresses (HCGA)
@@ -119,7 +120,7 @@ Table of Contents
            Aggregate)
    Appendix B.  Appendix B: Go Implementation Sketch
    Acknowledgements
-   Author's Address
+   Authors' Addresses
 
 1.  1.  Introduction
 
@@ -860,8 +861,13 @@ Acknowledgements
    The authors would like to thank Fern Siedel and Kapil Agrawal for
    valuable input.
 
-Author's Address
+Authors' Addresses
 
    Nick Buraglio
    Energy Sciences Network
    Email: buraglio@forwardingplane.net
+
+
+   Josh Bailey
+   Overly Specific Dynamics
+   Email: josh@felllight.com
