@@ -30,7 +30,7 @@ author:
     email: buraglio@forwardingplane.net
 -
     fullname: Josh Bailey
-    organization: Overly Specific Dynamics  
+    organization: Overly Specific Dynamics
     email: josh@felllight.com
 
 normative:
