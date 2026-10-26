@@ -49,6 +49,15 @@ About This Document
    Source for this draft and an issue tracker can be found at
    https://github.com/buraglio/draft-buraglio-6man-hcga.
 
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 1]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 Status of This Memo
 
    This Internet-Draft is submitted in full conformance with the
@@ -82,44 +91,52 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Introduction
-   2.  Conventions and Terminology
-   3.  RFC 3972 Background
-   4.  Problem Statement
-     4.1.  Infrastructure-Assigned Prefixes Carry No Key Binding
-     4.2.  Per-Agent /64 Routing
-     4.3.  Multiple Addresses per Agent
-   5.  HCGA Specification
-     5.1.  Parameters
-     5.2.  Subnet Bit Derivation
-     5.3.  HCGA Prefix Construction
-     5.4.  IID Derivation
-     5.5.  HCGA Address Construction
-     5.6.  Verification Procedure
-     5.7.  Collision Handling
-   6.  Multiple HCGA Addresses per Agent
-   7.  Interaction with RFC 3972 CGA Parameters
-   8.  Routing Considerations
-     8.1.  Aggregate Announcement
-     8.2.  Intra-Cluster Routing
-     8.3.  RPKI Alignment
-   9.  Security Considerations
-     9.1.  Scope and Threat Model
-     9.2.  Subnet Bit Security
-     9.3.  Privacy Implications
-     9.4.  IPR Status of RFC 3972
-     9.5.  Hardware Root of Trust Scope
-   10. IANA Considerations
-     10.1.  CGA SEC Value
-     10.2.  CGA Parameters Extension
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Conventions and Terminology . . . . . . . . . . . . . . . . .   4
+   3.  RFC 3972 Background . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Problem Statement . . . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Infrastructure-Assigned Prefixes Carry No Key Binding . .   6
+     4.2.  Per-Agent /64 Routing . . . . . . . . . . . . . . . . . .   6
+     4.3.  Multiple Addresses per Agent  . . . . . . . . . . . . . .   6
+   5.  HCGA Specification  . . . . . . . . . . . . . . . . . . . . .   6
+     5.1.  Parameters  . . . . . . . . . . . . . . . . . . . . . . .   6
+     5.2.  Subnet Bit Derivation . . . . . . . . . . . . . . . . . .   7
+     5.3.  HCGA Prefix Construction  . . . . . . . . . . . . . . . .   7
+     5.4.  IID Derivation  . . . . . . . . . . . . . . . . . . . . .   8
+     5.5.  HCGA Address Construction . . . . . . . . . . . . . . . .   8
+     5.6.  Verification Procedure  . . . . . . . . . . . . . . . . .   8
+     5.7.  Collision Handling  . . . . . . . . . . . . . . . . . . .   9
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 2]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
+   6.  Multiple HCGA Addresses per Agent . . . . . . . . . . . . . .  10
+   7.  Interaction with RFC 3972 CGA Parameters  . . . . . . . . . .  10
+   8.  Routing Considerations  . . . . . . . . . . . . . . . . . . .  11
+     8.1.  Aggregate Announcement  . . . . . . . . . . . . . . . . .  11
+     8.2.  Intra-Cluster Routing . . . . . . . . . . . . . . . . . .  11
+     8.3.  RPKI Alignment  . . . . . . . . . . . . . . . . . . . . .  11
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+     9.1.  Scope and Threat Model  . . . . . . . . . . . . . . . . .  11
+     9.2.  Subnet Bit Security . . . . . . . . . . . . . . . . . . .  12
+     9.3.  Privacy Implications  . . . . . . . . . . . . . . . . . .  12
+     9.4.  IPR Status of RFC 3972  . . . . . . . . . . . . . . . . .  13
+     9.5.  Hardware Root of Trust Scope  . . . . . . . . . . . . . .  13
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  13
+     10.1.  CGA SEC Value  . . . . . . . . . . . . . . . . . . . . .  14
+     10.2.  CGA Parameters Extension . . . . . . . . . . . . . . . .  14
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  14
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  15
    Appendix A.  Appendix A: Example HCGA Derivation (ECDSA P-256, /48
-           Aggregate)
-   Appendix B.  Appendix B: Go Implementation Sketch
-   Acknowledgements
-   Authors' Addresses
+           Aggregate)  . . . . . . . . . . . . . . . . . . . . . . .  17
+   Appendix B.  Appendix B: Go Implementation Sketch . . . . . . . .  18
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  19
 
 1.  Introduction
 
@@ -145,6 +162,13 @@ Table of Contents
        distinguishes instances within the prefix, but the prefix itself
        is a coarse-grained infrastructure artifact with no binding to
        any particular workload key.
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 3]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
    2.  *Per-agent routing granularity.* Routing and monitoring operate
        at prefix granularity.  If each agent has its own
@@ -195,6 +219,13 @@ Table of Contents
    operator- controlled, announced via BGP.  All HCGA-derived addresses
    are within A.  Typical length: /48.
 
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 4]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
    *Subnet bits:* The bits from position L through position 63 inclusive
    (0-indexed from the MSB).  Bit count: 64 - L.  For a /48 aggregate,
    the subnet bits occupy positions 48-63, a 16-bit field.
@@ -241,6 +272,15 @@ Table of Contents
    and compare it against address[8:16] ignoring the Sec and u/g bits,
    and check the Hash2 zero-bit condition for the Sec value read from
    the address.
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 5]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
    [RFC3972] uses SHA-1 for H.  [RFC4982] provides hash agility by
    having the Sec value identify both the hash function and the security
@@ -291,6 +331,13 @@ Table of Contents
 
    *  *public_key*: ECDSA P-256 public key, SPKI DER encoded
 
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 6]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
    *  *modifier*: 128-bit value (as in RFC 3972; see §5.7 and §6)
 
    *  *prefix_modifier*: 128-bit value, initially random (see §5.7)
@@ -340,6 +387,13 @@ Table of Contents
    << (8 - shift) lo := subnetHash[j+1] >> shift prefixBytes[i] = hi |
    lo } }
 
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 7]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 5.4.  IID Derivation
 
    The IID is computed per [RFC3972] §5, with the hash function and Sec
@@ -387,6 +441,14 @@ Table of Contents
    2.  *Subnet bit check:* compute subnet_hash per §5.2 from the
        aggregate, prefix_modifier and the public key, and verify that
        bits L to 63 of hcga_address match bits 0 to (63-L) of the hash.
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 8]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
    3.  *IID check:* perform the [RFC3972] §5 verification procedure on
        (hcga_address, CGA_Params) using the hash function and security
@@ -437,6 +499,13 @@ Table of Contents
    profile; it is used only to derive multiple addresses within a /64
    (§6).
 
+
+
+Buraglio & Bailey         Expires 29 April 2027                 [Page 9]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 6.  Multiple HCGA Addresses per Agent
 
    The HCGA prefix depends on the public key and prefix modifier but not
@@ -481,6 +550,17 @@ Table of Contents
    differs from SHA-1.  No verifier can check that hcga_prefix is itself
    derived from the public key without the prefix modifier and this
    specification.
+
+
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 10]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
 8.  Routing Considerations
 
@@ -531,6 +611,13 @@ Table of Contents
    record, no verification is possible and the address carries no more
    information than any other address in the aggregate.
 
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 11]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 9.2.  Subnet Bit Security
 
    The subnet bits are the leftmost n = 64-L bits of a SHA-256 output.
@@ -577,6 +664,16 @@ Table of Contents
    assess this tradeoff before using HCGA for traffic involving personal
    data.
 
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 12]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
    Multiple HCGA addresses per agent (Section 6) provide IID-level
    pseudonymity but not /64-level pseudonymity -- the /64 is permanently
    bound to the hardware key.  This linkability is stronger than that of
@@ -622,6 +719,16 @@ Table of Contents
    transitive attestation across workload boundaries.
 
 10.  IANA Considerations
+
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 13]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
 10.1.  CGA SEC Value
 
@@ -670,6 +777,15 @@ Table of Contents
               DOI 10.17487/RFC4581, October 2006,
               <https://www.rfc-editor.org/rfc/rfc4581>.
 
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 14]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
    [RFC4982]  Bagnulo, M. and J. Arkko, "Support for Multiple Hash
               Algorithms in Cryptographically Generated Addresses
               (CGAs)", RFC 4982, DOI 10.17487/RFC4982, July 2007,
@@ -713,6 +829,18 @@ Table of Contents
               Border Gateway Protocol 4 (BGP-4)", RFC 4271,
               DOI 10.17487/RFC4271, January 2006,
               <https://www.rfc-editor.org/rfc/rfc4271>.
+
+
+
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 15]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
    [RFC7217]  Gont, F., "A Method for Generating Semantically Opaque
               Interface Identifiers with IPv6 Stateless Address
@@ -762,6 +890,14 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
               arch-08>.
 
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 16]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 Appendix A.  Appendix A: Example HCGA Derivation (ECDSA P-256, /48
              Aggregate)
 
@@ -802,6 +938,21 @@ Appendix A.  Appendix A: Example HCGA Derivation (ECDSA P-256, /48
    subnet prefix in CGA_Params = bits 0-63 ; collision count 0 ; Hash1 =
    b7b2a162231255ab matches 74b2a162231255ab ignoring bits 0-2 and 6-7 ;
    Hash2 requires 0 leading zero bits
+
+
+
+
+
+
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 17]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
 
 Appendix B.  Appendix B: Go Implementation Sketch
 
@@ -851,6 +1002,14 @@ if !ok {
 }
 return netip.PrefixFrom(addr.Unmap(), 64), nil } ```
 
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 18]
+
+Internet-Draft  Hierarchical Cryptographically Generated    October 2026
+
+
 Acknowledgements
 
    The authors would like to thank Fern Siedel and Kapil Agrawal for
@@ -866,3 +1025,40 @@ Authors' Addresses
    Josh Bailey
    Overly Specific Dynamics
    Email: josh@felllight.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Buraglio & Bailey         Expires 29 April 2027                [Page 19]
