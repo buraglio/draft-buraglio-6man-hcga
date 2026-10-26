@@ -28,6 +28,10 @@ author:
     fullname: Nick Buraglio
     organization: Energy Sciences Network
     email: buraglio@forwardingplane.net
+-
+    fullname: Josh Bailey
+    organization: Overly Specific Dynamics  
+    email: josh@felllight.com
 
 normative:
   RFC2119:
