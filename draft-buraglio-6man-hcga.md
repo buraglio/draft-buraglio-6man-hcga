@@ -689,13 +689,13 @@ Step 4 -- HCGA address:
 ```
 
 Verification:
-1. Aggregate check: `3fff:1:cafe::/48` -> matches operator's /48 
+1. Aggregate check: `3fff:1:cafe::/48` -> matches operator's /48
 2. Subnet check: `SHA-256(aggregate_bytes || prefix_modifier || SPKI_DER)[0:2] = 0x6633`
-   -> matches bits 48-63 
+   -> matches bits 48-63
 3. IID check (RFC 3972/4982, Sec = 3 -> SHA-256, security parameter 0):
    subnet prefix in CGA_Params = bits 0-63 ; collision count 0 ;
    Hash1 = `b7b2a162231255ab` matches `74b2a162231255ab` ignoring bits 0-2
-   and 6-7 ; Hash2 requires 0 leading zero bits 
+   and 6-7 ; Hash2 requires 0 leading zero bits
 
 
 # Appendix B: Go Implementation Sketch
