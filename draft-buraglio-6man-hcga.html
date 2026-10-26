@@ -1311,9 +1311,9 @@ infrastructure-assigned prefixes provide no per-instance cryptographic binding.<
       <h2 id="name-1-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-1-introduction" class="section-name selfRef">1. Introduction</a>
       </h2>
-<p id="section-1-1">RFC 3972 <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> provides a mechanism to bind an IPv6 host's network
-address to a public key by deriving the 64-bit Interface Identifier (IID)
-from a cryptographic hash of the key. This binding enables Secure Neighbor
+<p id="section-1-1">RFC 3972 <span>[<a href="#RFC3972" class="cite xref">RFC3972</a>]</span> provides a mechanism to bind an IPv6 <span>[<a href="#RFC8200" class="cite xref">RFC8200</a>]</span> host's
+network address to a public key by deriving the 64-bit Interface Identifier
+(IID) <span>[<a href="#RFC4291" class="cite xref">RFC4291</a>]</span> from a cryptographic hash of the key. This binding enables Secure Neighbor
 Discovery <span>[<a href="#RFC3971" class="cite xref">RFC3971</a>]</span> and is used by ANCHOR <span>[<a href="#ANCHOR-PoC" class="cite xref">ANCHOR-PoC</a>]</span> as the primary
 forensic accountability signal.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">RFC 3972 treats the /64 prefix as a trusted external input from network
@@ -1411,7 +1411,7 @@ Hash2 = H(modifier[16] || 0x00^9 || public_key_SPKI || extension_fields)<a href=
 IID[0] = (IID[0] &amp; 0x1C) | (Sec &lt;&lt; 5)
          # bits 0-2 := Sec; bits 6 and 7 (u/g) := 0
 ```<a href="#section-1.2-3" class="pilcrow">¶</a></p>
-<p id="section-1.2-4">where <code>subnet_prefix[8]</code> is the first 8 bytes of the /64 prefix, <code>Sec</code> is
+<p id="section-1.2-4">where <code>subnet_prefix</code> (8 octets) is the first 8 bytes of the /64 prefix, <code>Sec</code> is
 a 3-bit security parameter encoded in the leftmost bits of the IID, and
 the 16×Sec leftmost bits of <code>Hash2</code> are required to be zero (the modifier
 is incremented until this holds). The collision count takes the values 0,
@@ -1513,9 +1513,8 @@ retaining per-agent /64 accountability.<a href="#section-1.3.3-1" class="pilcrow
           <h4 id="name-52-subnet-bit-derivation">
 <a href="#section-1.4.2" class="section-number selfRef">1.4.2. </a><a href="#name-52-subnet-bit-derivation" class="section-name selfRef">5.2 Subnet Bit Derivation</a>
           </h4>
-<p id="section-1.4.2-1">Let <code>n = 64 - L</code> be the number of subnet bits, and <code>aggregate_bytes[8]</code>
-the first 8 bytes of the aggregate prefix with bits L through 63 set to
-zero.<a href="#section-1.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.4.2-1">Let <code>n = 64 - L</code> be the number of subnet bits, and <code>aggregate_bytes</code>
+(8 octets: the aggregate prefix with bits L through 63 set to zero).<a href="#section-1.4.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.4.2-2"><code>
 subnet_hash = SHA-256(aggregate_bytes[8] || prefix_modifier[16]
                       || public_key_SPKI_DER)
@@ -1563,7 +1562,9 @@ if L%8 == 0 {
     prefixBytes[L/8] = (aggBytes[L/8] &amp; mask) | (subnetHash[0] &gt;&gt; shift)
     for i := L/8 + 1; i &lt; 8; i++ {
         j := i - L/8 - 1
-        prefixBytes[i] = (subnetHash[j] &lt;&lt; (8 - shift)) | (subnetHash[j+1] &gt;&gt; shift)
+        hi := subnetHash[j] &lt;&lt; (8 - shift)
+        lo := subnetHash[j+1] &gt;&gt; shift
+        prefixBytes[i] = hi | lo
     }
 }
 </code><a href="#section-1.4.3-2" class="pilcrow">¶</a></p>
@@ -1584,7 +1585,7 @@ Hash1 = SHA-256(CGA_Params)[:8]
 IID   = Hash1
 IID[0] = (IID[0] &amp; 0x1C) | (TBD1 &lt;&lt; 5)
 </code><a href="#section-1.4.4-2" class="pilcrow">¶</a></p>
-<p id="section-1.4.4-3">where <code>hcga_prefix_bytes[8]</code> is the 8-byte representation of the /64
+<p id="section-1.4.4-3">where <code>hcga_prefix_bytes</code> (8 octets) is the 8-byte representation of the /64
 network address (i.e., the first 8 bytes of a 128-bit address formed by
 appending 64 zero bits to <code>hcga_prefix</code>), and <code>collision_count</code> is the
 RFC 3972 collision count (0, 1 or 2; see §5.7). The leftmost three bits of
@@ -1676,8 +1677,8 @@ the fabric) is outside the scope of this document.<a href="#section-1.4.7-2.2.1"
 prefixes in a /48 aggregate is approximately n/2^16, and the expected number
 of prefix-modifier retries is correspondingly small while n ≪ 2^16. The
 subnet field cannot hold more than 2^(64−L) prefixes; operators SHOULD
-choose L so that 2^(64−L) comfortably exceeds the expected number of
-simultaneously active keys (for example, L ≤ 32 for deployments of tens of
+choose L so that 2^(64-L) comfortably exceeds the expected number of
+simultaneously active keys (for example, L &lt;= 32 for deployments of tens of
 thousands of workloads).<a href="#section-1.4.7-3" class="pilcrow">¶</a></p>
 <p id="section-1.4.7-4">The modifier plays no role in collision resolution under this profile; it
 is used only to derive multiple addresses within a /64 (§6).<a href="#section-1.4.7-4" class="pilcrow">¶</a></p>
@@ -1863,9 +1864,10 @@ personal data.<a href="#section-1.8.3-1" class="pilcrow">¶</a></p>
 <p id="section-1.8.3-2">Multiple HCGA addresses per agent (§6) provide IID-level pseudonymity but
 not /64-level pseudonymity — the /64 is permanently bound to the hardware
 key. This linkability is stronger than that of temporary addresses <span>[<a href="#RFC8981" class="cite xref">RFC8981</a>]</span>,
-which rotate both the IID and (in some deployments) the prefix. Operators
-should weigh RFC 8981 semantics carefully before deploying HCGA where
-individual privacy is a concern.<a href="#section-1.8.3-2" class="pilcrow">¶</a></p>
+which rotate both the IID and (in some deployments) the prefix, and stronger
+than semantically opaque stable IIDs <span>[<a href="#RFC7217" class="cite xref">RFC7217</a>]</span>, which hide structure but
+do not rotate. Operators should weigh RFC 8981 semantics carefully before
+deploying HCGA where individual privacy is a concern.<a href="#section-1.8.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ipr-status-of-rfc-3972">
@@ -1895,7 +1897,7 @@ binding strength<a href="#section-1.8.5-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-1.8.5-2.3">
               <p id="section-1.8.5-2.3.1"><strong>SPIFFE SVID key pair:</strong> software-generated, rotated; no direct hardware binding;
-chain via SPIRE tpm_devid node attestation<a href="#section-1.8.5-2.3.1" class="pilcrow">¶</a></p>
+chain via SPIRE <span>[<a href="#SPIRE" class="cite xref">SPIRE</a>]</span> tpm_devid node attestation<a href="#section-1.8.5-2.3.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-1.8.5-2.4">
               <p id="section-1.8.5-2.4.1"><strong>Software key (stub mode):</strong> no hardware binding; development use only<a href="#section-1.8.5-2.4.1" class="pilcrow">¶</a></p>
@@ -1999,13 +2001,13 @@ structure, and conveys the prefix modifier outside that structure (§2).<a href=
         <dd>
 <span class="refAuthor">Turner, S.</span>, <span class="refAuthor">Brown, D.</span>, <span class="refAuthor">Yiu, K.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">T. Polk</span>, <span class="refTitle">"Elliptic Curve Cryptography Subject Public Key Information"</span>, <span class="seriesInfo">RFC 5480</span>, <span class="seriesInfo">DOI 10.17487/RFC5480</span>, <time datetime="2009-03" class="refDate">March 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5480">https://www.rfc-editor.org/rfc/rfc5480</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC6234">[RFC6234]</dt>
-        <dd>
-<span class="refAuthor">Eastlake 3rd, D.</span> and <span class="refAuthor">T. Hansen</span>, <span class="refTitle">"US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)"</span>, <span class="seriesInfo">RFC 6234</span>, <span class="seriesInfo">DOI 10.17487/RFC6234</span>, <time datetime="2011-05" class="refDate">May 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6234">https://www.rfc-editor.org/rfc/rfc6234</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8200">[RFC8200]</dt>
+      <dd>
+<span class="refAuthor">Deering, S.</span> and <span class="refAuthor">R. Hinden</span>, <span class="refTitle">"Internet Protocol, Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 86</span>, <span class="seriesInfo">RFC 8200</span>, <span class="seriesInfo">DOI 10.17487/RFC8200</span>, <time datetime="2017-07" class="refDate">July 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8200">https://www.rfc-editor.org/rfc/rfc8200</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -2019,14 +2021,6 @@ structure, and conveys the prefix modifier outside that structure (§2).<a href=
 <dt id="ANCHOR-PoC">[ANCHOR-PoC]</dt>
         <dd>
 <span class="refAuthor">Buraglio, N.</span>, <span class="refTitle">"ANCHOR: Agent Network Cryptographic Hardware Origin Recording"</span>, <time datetime="2026" class="refDate">2026</time>, <span>&lt;<a href="https://github.com/buraglio/anchor">https://github.com/buraglio/anchor</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="KATA">[KATA]</dt>
-        <dd>
-<span class="refAuthor">Kata Containers Project</span>, <span class="refTitle">"Kata Containers"</span>, <span>n.d.</span>, <span>&lt;<a href="https://katacontainers.io">https://katacontainers.io</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="KEYLIME">[KEYLIME]</dt>
-        <dd>
-<span class="refAuthor">Keylime Project</span>, <span class="refTitle">"Keylime"</span>, <span>n.d.</span>, <span>&lt;<a href="https://keylime.dev">https://keylime.dev</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RATS-KEY-ATTEST">[RATS-KEY-ATTEST]</dt>
         <dd>
@@ -2043,10 +2037,6 @@ structure, and conveys the prefix modifier outside that structure (§2).<a href=
 <dt id="RFC7217">[RFC7217]</dt>
         <dd>
 <span class="refAuthor">Gont, F.</span>, <span class="refTitle">"A Method for Generating Semantically Opaque Interface Identifiers with IPv6 Stateless Address Autoconfiguration (SLAAC)"</span>, <span class="seriesInfo">RFC 7217</span>, <span class="seriesInfo">DOI 10.17487/RFC7217</span>, <time datetime="2014-04" class="refDate">April 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7217">https://www.rfc-editor.org/rfc/rfc7217</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8200">[RFC8200]</dt>
-        <dd>
-<span class="refAuthor">Deering, S.</span> and <span class="refAuthor">R. Hinden</span>, <span class="refTitle">"Internet Protocol, Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 86</span>, <span class="seriesInfo">RFC 8200</span>, <span class="seriesInfo">DOI 10.17487/RFC8200</span>, <time datetime="2017-07" class="refDate">July 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8200">https://www.rfc-editor.org/rfc/rfc8200</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8981">[RFC8981]</dt>
         <dd>
@@ -2177,7 +2167,9 @@ if L%8 == 0 {
     prefixBytes[L/8] = (aggBytes[L/8] &amp; mask) | (subnetHash[0] &gt;&gt; shift)
     for i := L/8 + 1; i &lt; 8; i++ {
         j := i - L/8 - 1
-        prefixBytes[i] = (subnetHash[j] &lt;&lt; (8 - shift)) | (subnetHash[j+1] &gt;&gt; shift)
+        hi := subnetHash[j] &lt;&lt; (8 - shift)
+        lo := subnetHash[j+1] &gt;&gt; shift
+        prefixBytes[i] = hi | lo
     }
 }
 // Zero the IID portion (bits 64-127)

@@ -124,11 +124,12 @@ Table of Contents
 
 1.  1.  Introduction
 
-   RFC 3972 [RFC3972] provides a mechanism to bind an IPv6 host's
-   network address to a public key by deriving the 64-bit Interface
-   Identifier (IID) from a cryptographic hash of the key.  This binding
-   enables Secure Neighbor Discovery [RFC3971] and is used by ANCHOR
-   [ANCHOR-PoC] as the primary forensic accountability signal.
+   RFC 3972 [RFC3972] provides a mechanism to bind an IPv6 [RFC8200]
+   host's network address to a public key by deriving the 64-bit
+   Interface Identifier (IID) [RFC4291] from a cryptographic hash of the
+   key.  This binding enables Secure Neighbor Discovery [RFC3971] and is
+   used by ANCHOR [ANCHOR-PoC] as the primary forensic accountability
+   signal.
 
    RFC 3972 treats the /64 prefix as a trusted external input from
    network infrastructure.  For hosts with a single, stable interface on
@@ -229,12 +230,12 @@ Table of Contents
    IID = Hash1 IID[0] = (IID[0] & 0x1C) | (Sec << 5) # bits 0-2 := Sec;
    bits 6 and 7 (u/g) := 0 ```
 
-   where subnet_prefix[8] is the first 8 bytes of the /64 prefix, Sec is
-   a 3-bit security parameter encoded in the leftmost bits of the IID,
-   and the 16×Sec leftmost bits of Hash2 are required to be zero (the
-   modifier is incremented until this holds).  The collision count takes
-   the values 0, 1 or 2 and is incremented on duplicate address
-   detection failure.
+   where subnet_prefix (8 octets) is the first 8 bytes of the /64
+   prefix, Sec is a 3-bit security parameter encoded in the leftmost
+   bits of the IID, and the 16×Sec leftmost bits of Hash2 are required
+   to be zero (the modifier is incremented until this holds).  The
+   collision count takes the values 0, 1 or 2 and is incremented on
+   duplicate address detection failure.
 
    Verification works in reverse: given (address, CGA_Params), check
    that subnet_prefix equals bits 0–63 of the address, recompute Hash1
@@ -304,9 +305,8 @@ Table of Contents
 
 1.4.2.  5.2 Subnet Bit Derivation
 
-   Let n = 64 - L be the number of subnet bits, and aggregate_bytes[8]
-   the first 8 bytes of the aggregate prefix with bits L through 63 set
-   to zero.
+   Let n = 64 - L be the number of subnet bits, and aggregate_bytes (8
+   octets: the aggregate prefix with bits L through 63 set to zero).
 
    subnet_hash = SHA-256(aggregate_bytes[8] || prefix_modifier[16] ||
    public_key_SPKI_DER) subnet_bits = subnet_hash[0:n] # leftmost n bits
@@ -337,8 +337,9 @@ Table of Contents
    else { // Non-byte-aligned: shift hash bits to align with address bit
    boundary shift := uint(L % 8) mask := byte(0xFF) << (8 - shift)
    prefixBytes[L/8] = (aggBytes[L/8] & mask) | (subnetHash[0] >> shift)
-   for i := L/8 + 1; i < 8; i++ { j := i - L/8 - 1 prefixBytes[i] =
-   (subnetHash[j] << (8 - shift)) | (subnetHash[j+1] >> shift) } }
+   for i := L/8 + 1; i < 8; i++ { j := i - L/8 - 1 hi := subnetHash[j]
+   << (8 - shift) lo := subnetHash[j+1] >> shift prefixBytes[i] = hi |
+   lo } }
 
 1.4.4.  5.4 IID Derivation
 
@@ -351,12 +352,12 @@ Table of Contents
    256(CGA_Params)[:8] IID = Hash1 IID[0] = (IID[0] & 0x1C) | (TBD1 <<
    5)
 
-   where hcga_prefix_bytes[8] is the 8-byte representation of the /64
-   network address (i.e., the first 8 bytes of a 128-bit address formed
-   by appending 64 zero bits to hcga_prefix), and collision_count is the
-   RFC 3972 collision count (0, 1 or 2; see §5.7).  The leftmost three
-   bits of the IID carry the Sec value and bits 6 and 7 are cleared,
-   exactly as in RFC 3972.
+   where hcga_prefix_bytes (8 octets) is the 8-byte representation of
+   the /64 network address (i.e., the first 8 bytes of a 128-bit address
+   formed by appending 64 zero bits to hcga_prefix), and collision_count
+   is the RFC 3972 collision count (0, 1 or 2; see §5.7).  The leftmost
+   three bits of the IID carry the Sec value and bits 6 and 7 are
+   cleared, exactly as in RFC 3972.
 
    Because the security parameter associated with TBD1 is 0, the RFC
    3972 Hash2 condition (16×0 = 0 leading zero bits) is satisfied for
@@ -429,9 +430,9 @@ Table of Contents
    existing prefixes in a /48 aggregate is approximately n/2^16, and the
    expected number of prefix-modifier retries is correspondingly small
    while n ≪ 2^16.  The subnet field cannot hold more than 2^(64−L)
-   prefixes; operators SHOULD choose L so that 2^(64−L) comfortably
+   prefixes; operators SHOULD choose L so that 2^(64-L) comfortably
    exceeds the expected number of simultaneously active keys (for
-   example, L ≤ 32 for deployments of tens of thousands of workloads).
+   example, L <= 32 for deployments of tens of thousands of workloads).
 
    The modifier plays no role in collision resolution under this
    profile; it is used only to derive multiple addresses within a /64
@@ -580,9 +581,10 @@ Table of Contents
    but not /64-level pseudonymity — the /64 is permanently bound to the
    hardware key.  This linkability is stronger than that of temporary
    addresses [RFC8981], which rotate both the IID and (in some
-   deployments) the prefix.  Operators should weigh RFC 8981 semantics
-   carefully before deploying HCGA where individual privacy is a
-   concern.
+   deployments) the prefix, and stronger than semantically opaque stable
+   IIDs [RFC7217], which hide structure but do not rotate.  Operators
+   should weigh RFC 8981 semantics carefully before deploying HCGA where
+   individual privacy is a concern.
 
 1.8.4.  9.4 IPR Status of RFC 3972
 
@@ -603,7 +605,8 @@ Table of Contents
       via TDX/SEV-SNP
 
    *  *SPIFFE SVID key pair:* software-generated, rotated; no direct
-      hardware binding; chain via SPIRE tpm_devid node attestation
+      hardware binding; chain via SPIRE [SPIRE] tpm_devid node
+      attestation
 
    *  *Software key (stub mode):* no hardware binding; development use
       only
@@ -677,14 +680,14 @@ Table of Contents
               Information", RFC 5480, DOI 10.17487/RFC5480, March 2009,
               <https://www.rfc-editor.org/rfc/rfc5480>.
 
-   [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
-              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
-              DOI 10.17487/RFC6234, May 2011,
-              <https://www.rfc-editor.org/rfc/rfc6234>.
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8200]  Deering, S. and R. Hinden, "Internet Protocol, Version 6
+              (IPv6) Specification", STD 86, RFC 8200,
+              DOI 10.17487/RFC8200, July 2017,
+              <https://www.rfc-editor.org/rfc/rfc8200>.
 
 2.2.  Informative References
 
@@ -692,11 +695,6 @@ Table of Contents
               Buraglio, N., "ANCHOR: Agent Network Cryptographic
               Hardware Origin Recording", 2026,
               <https://github.com/buraglio/anchor>.
-
-   [KATA]     Kata Containers Project, "Kata Containers", n.d.,
-              <https://katacontainers.io>.
-
-   [KEYLIME]  Keylime Project, "Keylime", n.d., <https://keylime.dev>.
 
    [RATS-KEY-ATTEST]
               Fiset, J., Ounsworth, M., Tschofenig, H., Birkholz, H.,
@@ -721,11 +719,6 @@ Table of Contents
               Autoconfiguration (SLAAC)", RFC 7217,
               DOI 10.17487/RFC7217, April 2014,
               <https://www.rfc-editor.org/rfc/rfc7217>.
-
-   [RFC8200]  Deering, S. and R. Hinden, "Internet Protocol, Version 6
-              (IPv6) Specification", STD 86, RFC 8200,
-              DOI 10.17487/RFC8200, July 2017,
-              <https://www.rfc-editor.org/rfc/rfc8200>.
 
    [RFC8981]  Gont, F., Krishnan, S., Narten, T., and R. Draves,
               "Temporary Address Extensions for Stateless Address
@@ -842,7 +835,9 @@ if L%8 == 0 {
     prefixBytes[L/8] = (aggBytes[L/8] & mask) | (subnetHash[0] >> shift)
     for i := L/8 + 1; i < 8; i++ {
         j := i - L/8 - 1
-        prefixBytes[i] = (subnetHash[j] << (8 - shift)) | (subnetHash[j+1] >> shift)
+        hi := subnetHash[j] << (8 - shift)
+        lo := subnetHash[j+1] >> shift
+        prefixBytes[i] = hi | lo
     }
 }
 // Zero the IID portion (bits 64-127)
