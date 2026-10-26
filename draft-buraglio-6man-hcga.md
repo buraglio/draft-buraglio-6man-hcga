@@ -37,17 +37,16 @@ normative:
   RFC2119:
   RFC8174:
   RFC4291:
+  RFC8200:
   RFC3972:
   RFC4581:
   RFC4982:
   RFC5480:
-  RFC6234:
 
 informative:
   RFC3971:
   RFC4271:
   RFC7217:
-  RFC8200:
   RFC8981:
   RFC9334:
   RFC9582:
@@ -103,16 +102,6 @@ informative:
     author:
       - org: SPIFFE Project
     target: https://github.com/spiffe/spire
-  KATA:
-    title: Kata Containers
-    author:
-      - org: Kata Containers Project
-    target: https://katacontainers.io
-  KEYLIME:
-    title: Keylime
-    author:
-      - org: Keylime Project
-    target: https://keylime.dev
 
 ---
 
@@ -140,9 +129,9 @@ infrastructure-assigned prefixes provide no per-instance cryptographic binding.
 
 ## 1. Introduction
 
-RFC 3972 {{RFC3972}} provides a mechanism to bind an IPv6 host's network
-address to a public key by deriving the 64-bit Interface Identifier (IID)
-from a cryptographic hash of the key. This binding enables Secure Neighbor
+RFC 3972 {{RFC3972}} provides a mechanism to bind an IPv6 {{RFC8200}} host's
+network address to a public key by deriving the 64-bit Interface Identifier
+(IID) {{RFC4291}} from a cryptographic hash of the key. This binding enables Secure Neighbor
 Discovery {{RFC3971}} and is used by ANCHOR {{ANCHOR-PoC}} as the primary
 forensic accountability signal.
 
@@ -239,7 +228,7 @@ IID[0] = (IID[0] & 0x1C) | (Sec << 5)
          # bits 0-2 := Sec; bits 6 and 7 (u/g) := 0
 ```
 
-where `subnet_prefix[8]` is the first 8 bytes of the /64 prefix, `Sec` is
+where `subnet_prefix` (8 octets) is the first 8 bytes of the /64 prefix, `Sec` is
 a 3-bit security parameter encoded in the leftmost bits of the IID, and
 the 16×Sec leftmost bits of `Hash2` are required to be zero (the modifier
 is incremented until this holds). The collision count takes the values 0,
@@ -303,9 +292,8 @@ HCGA takes the following inputs:
 
 ### 5.2 Subnet Bit Derivation
 
-Let `n = 64 - L` be the number of subnet bits, and `aggregate_bytes[8]`
-the first 8 bytes of the aggregate prefix with bits L through 63 set to
-zero.
+Let `n = 64 - L` be the number of subnet bits, and `aggregate_bytes`
+(8 octets: the aggregate prefix with bits L through 63 set to zero).
 
 ```
 subnet_hash = SHA-256(aggregate_bytes[8] || prefix_modifier[16]
@@ -354,7 +342,9 @@ if L%8 == 0 {
     prefixBytes[L/8] = (aggBytes[L/8] & mask) | (subnetHash[0] >> shift)
     for i := L/8 + 1; i < 8; i++ {
         j := i - L/8 - 1
-        prefixBytes[i] = (subnetHash[j] << (8 - shift)) | (subnetHash[j+1] >> shift)
+        hi := subnetHash[j] << (8 - shift)
+        lo := subnetHash[j+1] >> shift
+        prefixBytes[i] = hi | lo
     }
 }
 ```
@@ -373,7 +363,7 @@ IID   = Hash1
 IID[0] = (IID[0] & 0x1C) | (TBD1 << 5)
 ```
 
-where `hcga_prefix_bytes[8]` is the 8-byte representation of the /64
+where `hcga_prefix_bytes` (8 octets) is the 8-byte representation of the /64
 network address (i.e., the first 8 bytes of a 128-bit address formed by
 appending 64 zero bits to `hcga_prefix`), and `collision_count` is the
 RFC 3972 collision count (0, 1 or 2; see §5.7). The leftmost three bits of
@@ -450,8 +440,8 @@ The probability that a freshly derived /64 collides with one of n existing
 prefixes in a /48 aggregate is approximately n/2^16, and the expected number
 of prefix-modifier retries is correspondingly small while n ≪ 2^16. The
 subnet field cannot hold more than 2^(64−L) prefixes; operators SHOULD
-choose L so that 2^(64−L) comfortably exceeds the expected number of
-simultaneously active keys (for example, L ≤ 32 for deployments of tens of
+choose L so that 2^(64-L) comfortably exceeds the expected number of
+simultaneously active keys (for example, L <= 32 for deployments of tens of
 thousands of workloads).
 
 The modifier plays no role in collision resolution under this profile; it
@@ -589,9 +579,10 @@ personal data.
 Multiple HCGA addresses per agent (§6) provide IID-level pseudonymity but
 not /64-level pseudonymity — the /64 is permanently bound to the hardware
 key. This linkability is stronger than that of temporary addresses {{RFC8981}},
-which rotate both the IID and (in some deployments) the prefix. Operators
-should weigh RFC 8981 semantics carefully before deploying HCGA where
-individual privacy is a concern.
+which rotate both the IID and (in some deployments) the prefix, and stronger
+than semantically opaque stable IIDs {{RFC7217}}, which hide structure but
+do not rotate. Operators should weigh RFC 8981 semantics carefully before
+deploying HCGA where individual privacy is a concern.
 
 ### 9.4 IPR Status of RFC 3972
 
@@ -608,7 +599,7 @@ for the underlying key pair:
   binding strength
 - **vTPM (VM-bound):** bounded by hypervisor isolation; attestation via TDX/SEV-SNP
 - **SPIFFE SVID key pair:** software-generated, rotated; no direct hardware binding;
-  chain via SPIRE tpm_devid node attestation
+  chain via SPIRE {{SPIRE}} tpm_devid node attestation
 - **Software key (stub mode):** no hardware binding; development use only
 
 HCGA verification does not encode attestation tier; the mechanism binds
@@ -741,7 +732,9 @@ func DeriveHCGAPrefix(aggregate netip.Prefix, prefixModifier [16]byte, pub *ecds
         prefixBytes[L/8] = (aggBytes[L/8] & mask) | (subnetHash[0] >> shift)
         for i := L/8 + 1; i < 8; i++ {
             j := i - L/8 - 1
-            prefixBytes[i] = (subnetHash[j] << (8 - shift)) | (subnetHash[j+1] >> shift)
+            hi := subnetHash[j] << (8 - shift)
+            lo := subnetHash[j+1] >> shift
+            prefixBytes[i] = hi | lo
         }
     }
     // Zero the IID portion (bits 64-127)
