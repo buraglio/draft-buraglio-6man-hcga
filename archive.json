@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-25T04:14:46.241143+00:00",
+  "timestamp": "2026-10-27T04:37:41.712397+00:00",
   "repo": "buraglio/draft-buraglio-6man-hcga",
   "labels": [
     {
@@ -89,24 +89,96 @@
       "id": "PR_kwDOVSQ8o88AAAABKVHHzA",
       "title": "some algorithmic fixes, reframing.",
       "url": "https://github.com/buraglio/draft-buraglio-6man-hcga/pull/2",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "anarkiwi",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-10-23T19:29:39Z",
-      "updatedAt": "2026-10-23T19:29:39Z",
+      "updatedAt": "2026-10-26T21:23:42Z",
       "baseRepository": "buraglio/draft-buraglio-6man-hcga",
       "baseRefName": "main",
       "baseRefOid": "d30041fd75998710f69245a18d99f4df4f55e9ef",
       "headRepository": "anarkiwi/draft-buraglio-6man-hcga",
       "headRefName": "reframe",
       "headRefOid": "c60342d4071f0acd69c90be697edea1b69376898",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-26T21:23:42Z",
+      "mergedAt": "2026-10-26T21:23:42Z",
+      "mergedBy": "buraglio",
+      "mergeCommit": {
+        "oid": "717fee0430ed828a27cc3d4654f82303f7d2bdf7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOVSQ8o88AAAABUVFC_w",
+          "commit": {
+            "abbreviatedOid": "c60342d"
+          },
+          "author": "buraglio",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Wow, you went to work!",
+          "createdAt": "2026-10-26T21:23:27Z",
+          "updatedAt": "2026-10-26T21:23:27Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOVSQ8o88AAAABK4t1bQ",
+      "title": "idnits: fix references, non-ASCII chars, false-positive prose, and co\u2026",
+      "url": "https://github.com/buraglio/draft-buraglio-6man-hcga/pull/3",
+      "state": "MERGED",
+      "author": "buraglio",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "\u2026de line length\n\n- Move RFC8200 to normative; add inline citations for RFC8200 and RFC4291 in \u00a71\n- Remove RFC6234 (redundant with RFC4982) and unused KATA/KEYLIME entries\n- Add RFC7217 citation in \u00a79.3 privacy linkability comparison\n- Add SPIRE citation in \u00a79.5 hardware root of trust table\n- Reword `subnet_prefix[8]` and `hcga_prefix_bytes[8]` prose in \u00a73/\u00a75.4 and \u00a75.2 to avoid idnits parsing bare `[8]` as a missing reference link\n- Replace non-ASCII `\u2264` with `<=` and `64\u2212L` with `64-L` in \u00a75.7\n- Split non-byte-aligned inner loop line in \u00a75.3 and Appendix B (was 84 chars) into hi/lo temporaries to stay within idnits line-length limit",
+      "createdAt": "2026-10-26T22:20:46Z",
+      "updatedAt": "2026-10-26T22:23:36Z",
+      "baseRepository": "buraglio/draft-buraglio-6man-hcga",
+      "baseRefName": "main",
+      "baseRefOid": "833aa8eee39e64062ae251e0e96375598a51ca59",
+      "headRepository": "buraglio/draft-buraglio-6man-hcga",
+      "headRefName": "idnits-fixes",
+      "headRefOid": "f4878686810b1db5b50303a0d7c27c00e3e1e0cb",
+      "closedAt": "2026-10-26T22:23:36Z",
+      "mergedAt": "2026-10-26T22:23:36Z",
+      "mergedBy": "buraglio",
+      "mergeCommit": {
+        "oid": "9b7c8d4213763d3015931f5865e8a1c3f252cbe9"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOVSQ8o88AAAABK5AIHw",
+      "title": "Merge pull request #3 from buraglio/idnits-fixes",
+      "url": "https://github.com/buraglio/draft-buraglio-6man-hcga/pull/4",
+      "state": "MERGED",
+      "author": "buraglio",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "idnits: fix references, non-ASCII chars, false-positive prose, etc.",
+      "createdAt": "2026-10-26T22:49:57Z",
+      "updatedAt": "2026-10-26T22:50:13Z",
+      "baseRepository": "buraglio/draft-buraglio-6man-hcga",
+      "baseRefName": "idnits-fixes",
+      "baseRefOid": "9551f4d10d44f85c37d6a6981ea9913c12ad55ae",
+      "headRepository": "buraglio/draft-buraglio-6man-hcga",
+      "headRefName": "main",
+      "headRefOid": "9b7c8d4213763d3015931f5865e8a1c3f252cbe9",
+      "closedAt": "2026-10-26T22:50:13Z",
+      "mergedAt": "2026-10-26T22:50:13Z",
+      "mergedBy": "buraglio",
+      "mergeCommit": {
+        "oid": "dc49fa0343aadc13d4dfaacccc3a583de7915c68"
+      },
       "comments": [],
       "reviews": []
     }
